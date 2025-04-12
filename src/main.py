@@ -50,7 +50,11 @@ SUPPORTED_STAGES = {
     },
     "spilt": {
         "title": "Data Splitting",
-        "import_path": "src.data.spilt.run_split_pipeline",
+        "import_path": "src.data.split.run_split_pipeline",
+    },
+    "ifeature": {
+        "title": "iFeature Extraction",
+        "import_path": "src.features.ifeature_encoding.run_ifeature_pipeline",
     },
 }
 
@@ -117,12 +121,14 @@ def main():
             "  clean           Clean and aggregate data for downstream modeling\n"
             "  group           Assign MIC group labels to processed datasets\n"
             "  split           Split the processed dataset into train/test sets\n"
+            "  ifeature        Extract AAC, PAAC, CTDD, GAAC features using iFeature\n"
             "\n"
             "Examples:\n"
             "  python main.py --stage collect --log_path logs/collect.log\n"
             "  python main.py --stage clean --log_path logs/clean.log\n"
             "  python main.py --stage group --log_path logs/group.log\n"
             "  python main.py --stage split --log_path logs/split.log\n"
+            "  python main.py --stage ifeature --log_path logs/ifeature.log\n"
         ),
         formatter_class=argparse.RawTextHelpFormatter,
     )
