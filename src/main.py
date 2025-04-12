@@ -7,11 +7,14 @@ including preprocessing, feature encoding, classical machine learning, and deep 
 
 Supported stages include:
   - Data collection & cleaning
+  - Feature extraction (e.g., iFeature)
+  - ML model training & testing
 
 Each stage is modular and can be executed independently or in combination via command-line flags.
 
 Usage Example:
-  python main.py --stage collect
+  python main.py --stage collect --log_path logs/collect.log
+  python main.py --stage train_ml --log_path logs/train_ml.log --model_type random_forest xgboost
 """
 # ============================== Standard Library Imports ==============================
 import argparse
@@ -55,6 +58,14 @@ SUPPORTED_STAGES = {
     "ifeature": {
         "title": "iFeature Extraction",
         "import_path": "src.features.ifeature_encoding.run_ifeature_pipeline",
+    },
+    "train_ml": {
+        "title": "ML Model Training",
+        "import_path": "src.models.machine_learning.train.run_train_ml_pipeline",
+    },
+    "test_ml": {
+        "title": "ML Model Testing",
+        "import_path": "src.models.machine_learning.test.run_test_ml_pipeline",
     },
 }
 
@@ -101,8 +112,25 @@ def dispatch_stage(stage: str, args) -> None:
     )
     logger.log_title(f"Running Stage: '{stage_info['title']}'", level=logging.INFO)
 
-    # General stage
-    stage_func(base_path=BASE_PATH, logger=logger)
+    # Dispatch based on stage type
+    if stage == "train_ml":
+        stage_func(
+            base_path=BASE_PATH,
+            logger=logger,
+            model_type=args.model_type,
+            n_jobs=args.n_jobs,
+            random_state=args.random_state,
+            cv=args.cv,
+            loss_function=args.loss_function,
+        )
+    elif stage == "test_ml":
+        stage_func(
+            base_path=BASE_PATH,
+            logger=logger,
+            model_type=args.model_type,
+        )
+    else:
+        stage_func(base_path=BASE_PATH, logger=logger)
 
 
 # ============================== Main Entry ==============================
@@ -114,21 +142,18 @@ def main():
     # -------------------- Argument Parser --------------------
     parser = argparse.ArgumentParser(
         description=(
-            "ANIA - An Inception-Attention Network for Predicting the Minimum Inhibitory Concentration (MIC) of Antimicrobial Peptides\n"
-            "\n"
+            "ANIA - An Inception-Attention Network for Predicting the Minimum Inhibitory Concentration (MIC) of Antimicrobial Peptides\n\n"
             "Pipeline stages:\n"
-            "  collect         Run data collection from external AMP databases\n"
-            "  clean           Clean and aggregate data for downstream modeling\n"
-            "  group           Assign MIC group labels to processed datasets\n"
-            "  split           Split the processed dataset into train/test sets\n"
-            "  ifeature        Extract AAC, PAAC, CTDD, GAAC features using iFeature\n"
-            "\n"
+            "  collect         Run data collection from AMP databases\n"
+            "  clean           Clean and aggregate AMP data\n"
+            "  group           Assign MIC group labels to sequences\n"
+            "  split           Stratified split into train/test sets\n"
+            "  ifeature        Extract AAC, PAAC, CTDD, GAAC features\n"
+            "  train_ml        Train classical ML models with GridSearchCV\n"
+            "  test_ml         Test trained ML models and evaluate metrics\n\n"
             "Examples:\n"
-            "  python main.py --stage collect --log_path logs/collect.log\n"
-            "  python main.py --stage clean --log_path logs/clean.log\n"
-            "  python main.py --stage group --log_path logs/group.log\n"
-            "  python main.py --stage split --log_path logs/split.log\n"
             "  python main.py --stage ifeature --log_path logs/ifeature.log\n"
+            "  python main.py --stage train_ml --log_path logs/train_ml.log --model_type ridge xgboost\n"
         ),
         formatter_class=argparse.RawTextHelpFormatter,
     )
@@ -147,6 +172,39 @@ def main():
         type=str,
         default=None,
         help="Optional custom log file path.",
+    )
+
+    # ML-Specific Options
+    parser.add_argument(
+        "--model_type",
+        type=str,
+        nargs="+",
+        default=None,
+        help="Model type(s) to run (e.g., linear, random_forest, xgboost, all).",
+    )
+    parser.add_argument(
+        "--n_jobs",
+        type=int,
+        default=-1,
+        help="Number of CPU cores to use (-1 = all).",
+    )
+    parser.add_argument(
+        "--random_state",
+        type=int,
+        default=42,
+        help="Random seed for reproducibility.",
+    )
+    parser.add_argument(
+        "--cv",
+        type=int,
+        default=5,
+        help="Number of cross-validation folds.",
+    )
+    parser.add_argument(
+        "--loss_function",
+        type=str,
+        default="neg_mean_squared_error",
+        help="Loss function for GridSearchCV scoring.",
     )
 
     args = parser.parse_args()
