@@ -337,7 +337,7 @@ def run_train_ml_pipeline(
                 for _, model in enumerate(models_to_train, start=1):
                     model_output_path = os.path.join(
                         base_path,
-                        f"experiments/models/{suffix}_{model}{feature['suffix']}.pkl",
+                        f"experiments/{suffix}/models/{model}{feature['suffix']}.pkl",
                     )
                     train_model(
                         X_train=X_train,

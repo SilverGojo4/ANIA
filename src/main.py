@@ -67,6 +67,10 @@ SUPPORTED_STAGES = {
         "title": "ML Model Testing",
         "import_path": "src.models.machine_learning.test.run_test_ml_pipeline",
     },
+    "cgr": {
+        "title": "CGR Encoding",
+        "import_path": "src.features.cgr_encoding.run_cgr_pipeline",
+    },
 }
 
 
@@ -151,6 +155,7 @@ def main():
             "  ifeature        Extract AAC, PAAC, CTDD, GAAC features\n"
             "  train_ml        Train classical ML models with GridSearchCV\n"
             "  test_ml         Test trained ML models and evaluate metrics\n\n"
+            "  cgr             Encode sequences using Chaos Game Representation (CGR)\n"
             "Examples:\n"
             "  python main.py --stage ifeature --log_path logs/ifeature.log\n"
             "  python main.py --stage train_ml --log_path logs/train_ml.log --model_type ridge xgboost\n"

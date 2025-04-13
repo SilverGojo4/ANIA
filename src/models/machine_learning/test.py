@@ -329,11 +329,11 @@ def run_test_ml_pipeline(
                 for _, model in enumerate(models_to_train, start=1):
                     model_input_path = os.path.join(
                         base_path,
-                        f"experiments/models/{suffix}_{model}{feature['suffix']}.pkl",
+                        f"experiments/{suffix}/models/{model}{feature['suffix']}.pkl",
                     )
                     prediction_output_path = os.path.join(
                         base_path,
-                        f"experiments/predictions/{suffix}_{model}{feature['suffix']}.csv",
+                        f"experiments/{suffix}/predictions/{model}{feature['suffix']}.csv",
                     )
                     test_model(
                         df_metadata=df_metadata,
