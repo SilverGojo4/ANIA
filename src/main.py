@@ -9,12 +9,13 @@ Supported stages include:
   - Data collection & cleaning
   - Feature extraction (e.g., iFeature)
   - ML model training & testing
-
-Each stage is modular and can be executed independently or in combination via command-line flags.
+  - Deep learning training & testing (e.g., ANIA)
 
 Usage Example:
   python main.py --stage collect --log_path logs/collect.log
   python main.py --stage train_ml --log_path logs/train_ml.log --model_type random_forest xgboost
+  python main.py --stage train_ania --strain "Pseudomonas aeruginosa" --log_path logs/train_ania.log
+  python main.py --stage test_ania --strain "Pseudomonas aeruginosa" --log_path logs/test_ania.log
 """
 # ============================== Standard Library Imports ==============================
 import argparse
@@ -51,7 +52,7 @@ SUPPORTED_STAGES = {
         "title": "Data Grouping",
         "import_path": "src.data.group.run_group_pipeline",
     },
-    "spilt": {
+    "split": {
         "title": "Data Splitting",
         "import_path": "src.data.split.run_split_pipeline",
     },
@@ -70,6 +71,14 @@ SUPPORTED_STAGES = {
     "cgr": {
         "title": "CGR Encoding",
         "import_path": "src.features.cgr_encoding.run_cgr_pipeline",
+    },
+    "train_ania": {
+        "title": "ANIA Model Training",
+        "import_path": "src.models.deep_learning.train.run_train_ania_pipeline",
+    },
+    "test_ania": {
+        "title": "ANIA Model Testing",
+        "import_path": "src.models.deep_learning.test.run_test_dl_pipeline",
     },
 }
 
@@ -133,6 +142,28 @@ def dispatch_stage(stage: str, args) -> None:
             logger=logger,
             model_type=args.model_type,
         )
+    elif stage == "train_ania":
+        stage_func(
+            base_path=BASE_PATH,
+            strain=args.strain,
+            logger=logger,
+            train_split=args.train_split,
+            patience=args.patience,
+            device=args.device,
+            random_search=args.random_search,
+            num_random_samples=args.num_random_samples,
+            model_output_path=args.model_output_path,
+        )
+    elif stage == "test_ania":
+        stage_func(
+            base_path=BASE_PATH,
+            strain=args.strain,
+            logger=logger,
+            device=args.device,
+            model_input_path=args.model_input_path,
+            test_input_file=args.test_input_file,
+            prediction_output_path=args.prediction_output_path,
+        )
     else:
         stage_func(base_path=BASE_PATH, logger=logger)
 
@@ -154,11 +185,15 @@ def main():
             "  split           Stratified split into train/test sets\n"
             "  ifeature        Extract AAC, PAAC, CTDD, GAAC features\n"
             "  train_ml        Train classical ML models with GridSearchCV\n"
-            "  test_ml         Test trained ML models and evaluate metrics\n\n"
+            "  test_ml         Test trained ML models and evaluate metrics\n"
             "  cgr             Encode sequences using Chaos Game Representation (CGR)\n"
+            "  train_ania      Train ANIA deep learning model with GridSearch\n"
+            "  test_ania       Test trained ANIA deep learning model\n\n"
             "Examples:\n"
             "  python main.py --stage ifeature --log_path logs/ifeature.log\n"
             "  python main.py --stage train_ml --log_path logs/train_ml.log --model_type ridge xgboost\n"
+            "  python main.py --stage train_ania --strain 'Pseudomonas aeruginosa' --log_path logs/train_ania.log\n"
+            "  python main.py --stage test_ania --strain 'Pseudomonas aeruginosa' --log_path logs/test_ania.log\n"
         ),
         formatter_class=argparse.RawTextHelpFormatter,
     )
@@ -210,6 +245,68 @@ def main():
         type=str,
         default="neg_mean_squared_error",
         help="Loss function for GridSearchCV scoring.",
+    )
+
+    # ANIA-Specific Options
+    parser.add_argument(
+        "--strain",
+        type=str,
+        default=None,
+        help="Strain to train on (e.g., 'Escherichia coli', 'Pseudomonas aeruginosa', 'Staphylococcus aureus').",
+    )
+    parser.add_argument(
+        "--train_split",
+        type=float,
+        default=0.8,
+        help="Proportion of data to use for training (default is 0.8).",
+    )
+    parser.add_argument(
+        "--patience",
+        type=int,
+        default=10,
+        help="Number of epochs to wait for improvement in validation loss before early stopping (default is 10).",
+    )
+    parser.add_argument(
+        "--device",
+        type=str,
+        default="cuda:0",
+        help="Device to run the model on (e.g., 'cuda', 'cuda:0', 'cuda:0,1', default is 'cuda:0').",
+    )
+    parser.add_argument(
+        "--random_search",
+        type=lambda x: x.lower() == "true",
+        default=False,
+        help="Whether to perform random search instead of full grid search (default is False).",
+    )
+    parser.add_argument(
+        "--num_random_samples",
+        type=int,
+        default=50,
+        help="Number of random hyperparameter combinations to sample if random_search is True (default is 50).",
+    )
+    parser.add_argument(
+        "--model_output_path",
+        type=str,
+        default=None,
+        help="Path to save the trained model (without the '.pt' extension).",
+    )
+    parser.add_argument(
+        "--model_input_path",
+        type=str,
+        default=None,
+        help="Path to the trained model checkpoint (.pt file).",
+    )
+    parser.add_argument(
+        "--test_input_file",
+        type=str,
+        default=None,
+        help="Path to the test data CSV file for ANIA testing (e.g., data/processed/{suffix}/All_Integrated_aggregated.csv).",
+    )
+    parser.add_argument(
+        "--prediction_output_path",
+        type=str,
+        default=None,
+        help="Path to save the test set prediction results as CSV (e.g., test_predict.csv).",
     )
 
     args = parser.parse_args()

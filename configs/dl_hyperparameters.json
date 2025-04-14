@@ -1,0 +1,27 @@
+{
+  "ania": {
+    "batch_size": [64, 128],
+    "learning_rate": [0.0001, 0.0005],
+    "weight_decay": [0.0001, 0.001],
+    "optimizer": ["adamw"],
+    "loss_function": ["mse"],
+    "inception1_branch1x1_channels": [32],
+    "inception1_branch3x3_channels": [48],
+    "inception1_branch3x3_reduction": [32],
+    "inception1_branch5x5_channels": [32],
+    "inception1_branch5x5_reduction": [16],
+    "inception1_branch_pool_channels": [16],
+    "inception2_branch1x1_channels": [48],
+    "inception2_branch3x3_channels": [64],
+    "inception2_branch3x3_reduction": [48],
+    "inception2_branch5x5_channels": [48],
+    "inception2_branch5x5_reduction": [32],
+    "inception2_branch_pool_channels": [16],
+    "num_heads": [2],
+    "d_model": [128],
+    "num_encoder_layers": [1],
+    "dense_hidden_dim": [64],
+    "dropout_rate": [0.4, 0.5, 0.6],
+    "epochs": [50]
+  }
+}
