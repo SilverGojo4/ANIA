@@ -75,22 +75,22 @@ def assign_mic_group(
         )
         logger.add_divider(level=logging.INFO, length=100, border="+", fill="-")
 
-        # Apply quantile-based binning into 3 groups and extract bin edges
-        mic_grouped, bin_edges = pd.qcut(
-            df["Log MIC Value"],
-            q=3,
-            labels=["low", "medium", "high"],
-            retbins=True,
-            duplicates="drop",  # in case some values are identical
-        )
-        df["MIC Group"] = mic_grouped
+        # Compute mean and standard deviation
+        mean = df["Log MIC Value"].mean()
+        std = df["Log MIC Value"].std()
+
+        # Define custom bin edges based on standard deviation
+        bin_edges = [-float("inf"), mean - std, mean + std, float("inf")]
+        labels = ["low", "medium", "high"]
+
+        # Apply binning
+        df["MIC Group"] = pd.cut(df["Log MIC Value"], bins=bin_edges, labels=labels)
 
         # Log bin ranges
         bin_ranges = [
-            f"[{bin_edges[i]:.4f}, {bin_edges[i+1]:.4f})"
-            for i in range(len(bin_edges) - 2)
-        ] + [
-            f"[{bin_edges[-2]:.4f}, {bin_edges[-1]:.4f}]"
+            f"(-∞, {mean - std:.4f})",
+            f"[{mean - std:.4f}, {mean + std:.4f})",
+            f"[{mean + std:.4f}, ∞)",
         ]  # last bin includes right edge
 
         logger.log_with_borders(

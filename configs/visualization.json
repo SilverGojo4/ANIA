@@ -1,0 +1,193 @@
+{
+  "RegressionPlot": {
+    "plot_size": [8, 6],
+    "font_family": "Arial",
+    "font_size": 16,
+    "label_font_size": 18,
+    "tick_font_size": 14,
+    "stats_font_size": 17,
+    "dpi": 300,
+
+    "scatter_color": "#82B0D2",
+    "scatter_alpha": 0.6,
+    "scatter_size": 50,
+    "scatter_edgecolor": "black",
+
+    "regression_line_color": "#FA7F6F",
+    "regression_line_width": 3,
+    "regression_ci": 99,
+
+    "identity_line_style": "--",
+    "identity_line_color": "gray",
+    "identity_line_alpha": 0.8,
+    "identity_line_width": 1.5,
+
+    "bbox_facecolor": "white",
+    "bbox_alpha": 0.8,
+
+    "text_anchor_x": 0.05,
+    "text_anchor_y": 0.95,
+
+    "transparent": false
+  },
+
+  "ResidualPlot": {
+    "plot_size": [8, 6],
+    "font_family": "Arial",
+    "font_size": 14,
+    "label_font_size": 14,
+    "tick_font_size": 14,
+    "dpi": 300,
+
+    "scatter_color": "#82B0D2",
+    "scatter_alpha": 0.6,
+    "scatter_size": 50,
+    "scatter_edgecolor": "black",
+
+    "lowess_smoothing": true,
+    "lowess_line_color": "#FA7F6F",
+    "lowess_line_width": 3,
+
+    "reference_line_color": "gray",
+    "reference_line_style": "--",
+    "reference_line_alpha": 0.8,
+    "reference_line_width": 1.5,
+
+    "transparent": false
+  },
+
+  "ResidualHistogram": {
+    "plot_size": [8, 6],
+    "font_family": "Arial",
+    "font_size": 14,
+    "label_font_size": 14,
+    "tick_font_size": 14,
+    "legend_font_size": 12,
+    "legend_edgecolor": "black",
+    "dpi": 300,
+
+    "bins": 30,
+
+    "hist_color": "#82B0D2",
+    "hist_edgecolor": "black",
+    "hist_alpha": 0.7,
+
+    "kde_color": "#FA7F6F",
+    "kde_linewidth": 2,
+
+    "norm_line_color": "black",
+    "norm_linewidth": 2,
+    "norm_line_style": "--",
+
+    "transparent": false
+  },
+
+  "QQPlot": {
+    "plot_size": [8, 6],
+    "font_family": "Arial",
+    "font_size": 14,
+    "label_font_size": 14,
+    "tick_font_size": 14,
+    "legend_font_size": 12,
+    "dpi": 300,
+
+    "point_color": "#82B0D2",
+    "point_size": 50,
+    "point_alpha": 0.7,
+    "point_edgecolor": "black",
+
+    "identity_line_color": "gray",
+    "identity_line_style": "--",
+    "identity_line_width": 2,
+
+    "transparent": false
+  },
+
+  "ResidualBoxplot": {
+    "plot_size": [8, 6],
+    "font_family": "Arial",
+    "font_size": 14,
+    "label_font_size": 14,
+    "tick_font_size": 14,
+    "dpi": 300,
+
+    "bins": 10,
+
+    "box_color": "#82B0D2",
+    "box_edgecolor": "black",
+    "box_linewidth": 1.5,
+
+    "flier_marker": "o",
+    "flier_color": "#FA7F6F",
+    "flier_alpha": 0.6,
+    "flier_size": 6,
+
+    "transparent": false
+  },
+
+  "ModelPerformance": {
+    "plot_size": [10, 6],
+    "font_family": "Arial",
+    "font_size": 14,
+    "label_font_size": 14,
+    "tick_font_size": 14,
+    "legend_font_size": 6,
+    "legend_edgecolor": "black",
+    "dpi": 300,
+
+    "bar_alpha": 0.8,
+    "bar_width": 0.8,
+    "bar_colors": [
+      "#82B0D2",
+      "#FA7F6F",
+      "#8ECFC9",
+      "#FFBE7A",
+      "#BEB8DC",
+      "#E7DAD2",
+      "#A1C181",
+      "#F5A623"
+    ],
+
+    "legend_location": "upper left",
+    "legend_bbox_anchor": [1.02, 1],
+    "xticks_rotation": 45,
+
+    "transparent": false
+  },
+
+  "SequenceLengthVsMIC": {
+    "plot_size": [8, 6],
+    "hist_color": "#bda6df",
+    "hist_edgecolor": "black",
+    "hist_alpha": 0.6,
+    "scatter_color": "#FA7F6F",
+    "scatter_alpha": 0.4,
+    "scatter_size": 12,
+    "regression_color": "#FFBE7A",
+    "regression_linewidth": 4,
+    "label_font_size": 20,
+    "tick_font_size": 16,
+    "dpi": 300,
+    "transparent": false,
+    "legend_loc": "upper right",
+    "legend_font_size": 14,
+    "legend_frameon": true,
+    "legend_facecolor": "white",
+    "legend_bbox_alpha": 0.9
+  },
+
+  "LogMICDistribution": {
+    "plot_size": [8, 6],
+    "bins": 20,
+    "hist_color": "#bda6df",
+    "hist_edgecolor": "black",
+    "hist_alpha": 0.7,
+    "kde_color": "#FA7F6F",
+    "kde_linewidth": 2,
+    "label_font_size": 20,
+    "tick_font_size": 18,
+    "dpi": 300,
+    "transparent": false
+  }
+
+}
