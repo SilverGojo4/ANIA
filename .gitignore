@@ -56,4 +56,17 @@ tests/**/results/
 # ===========================
 # Ignore Test Scripts
 # ===========================
-run.sh
+run_EC.sh
+run_PA.sh
+run_SA.sh
+finetuned_EC.sh
+finetuned_PA.sh
+finetuned_SA.sh
+
+# ===========================
+# Ignore API-related runtime data
+# ===========================
+api_data/uploads/
+api_data/predictions/
+api_data/logs/
+src/api

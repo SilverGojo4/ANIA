@@ -495,4 +495,4 @@ class ANIA(nn.Module):
         cam = torch.relu(cam)  # ReLU activation
         cam = cam / (cam.max() + 1e-8)  # Normalize to [0, 1]
 
-        return cam[0]  # Return heatmap of first sample
+        return cam  # Return heatmap of first sample

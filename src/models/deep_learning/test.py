@@ -17,6 +17,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn.functional as F
 from sklearn.metrics import mean_squared_error, r2_score
 from torch import nn
 from torch.amp import GradScaler, autocast  # type: ignore
@@ -325,6 +326,76 @@ def load_trained_ania_model(
         raise
 
 
+def compute_gradcam(
+    model: nn.Module,
+    input_tensor: torch.Tensor,
+    target_layer_name: str = "inception1",
+    device: str = "cuda:0",
+) -> torch.Tensor:
+    """
+    Compute Grad-CAM heatmap for a single input sample and specified layer.
+
+    Parameters
+    ----------
+    model : nn.Module
+        Trained ANIA model.
+    input_tensor : torch.Tensor
+        Input tensor of shape (1, C, H, W).
+    target_layer_name : str
+        Name of the layer for Grad-CAM extraction (e.g., 'inception1').
+    device : str
+        Device to run on (e.g., 'cuda:0').
+
+    Returns
+    -------
+    torch.Tensor
+        2D Grad-CAM heatmap (same spatial size as feature map of target layer).
+    """
+    model.eval()
+    input_tensor = input_tensor.to(device).requires_grad_()
+
+    # Hook to capture activations and gradients
+    activations = []
+    gradients = []
+
+    def forward_hook(module, input, output):
+        activations.append(output)
+
+    def backward_hook(module, grad_input, grad_output):
+        gradients.append(grad_output[0])
+
+    # Register hooks
+    target_layer = getattr(model, target_layer_name)
+    forward_handle = target_layer.register_forward_hook(forward_hook)
+    backward_handle = target_layer.register_backward_hook(backward_hook)
+
+    # Forward pass
+    output = model(input_tensor)
+    pred_score = output.squeeze()
+
+    # Backward pass for Grad-CAM
+    model.zero_grad()
+    pred_score.backward(retain_graph=True)
+
+    # Extract saved activations and gradients
+    activ = activations[0].detach()  # shape: (1, C, H, W)
+    grad = gradients[0].detach()  # shape: (1, C, H, W)
+    weights = grad.mean(dim=(2, 3), keepdim=True)  # shape: (1, C, 1, 1)
+
+    # Compute weighted sum of activations
+    cam = (weights * activ).sum(dim=1).squeeze()  # shape: (H, W)
+
+    # ReLU and normalize
+    cam = F.relu(cam)
+    cam = (cam - cam.min()) / (cam.max() - cam.min() + 1e-6)
+
+    # Remove hooks
+    forward_handle.remove()
+    backward_handle.remove()
+
+    return cam.cpu()
+
+
 def test_dl_model(
     df_metadata: pd.DataFrame,
     X_test_fcgr: torch.Tensor,
@@ -367,7 +438,7 @@ def test_dl_model(
         start_time = time.time()
 
         # Check device and set up optimizations
-        device_ids, primary_device = check_cuda_and_optimize(device, logger)
+        _, primary_device = check_cuda_and_optimize(device, logger)
         logger.add_divider(level=logging.INFO, length=100, border="+", fill="-")
 
         # Load model structure and state_dict
@@ -400,6 +471,46 @@ def test_dl_model(
         df_results = df_metadata.copy()
         df_results["Log MIC Value"] = y_true
         df_results["Predicted Log MIC Value"] = y_pred
+
+        # Grad-CAM for inception1 and inception2
+        gradcam_vectors_i1 = []
+        gradcam_vectors_i2 = []
+        for i in range(X_test_fcgr.shape[0]):
+            input_sample = X_test_fcgr[i].unsqueeze(0)
+
+            # Grad-CAM for inception1
+            cam_i1 = compute_gradcam(model, input_sample, "inception1", primary_device)
+            gradcam_vectors_i1.append(cam_i1.flatten().numpy())
+
+            # Grad-CAM for inception2
+            cam_i2 = compute_gradcam(model, input_sample, "inception2", primary_device)
+            gradcam_vectors_i2.append(cam_i2.flatten().numpy())
+
+        # Combine to DataFrame
+        gradcam_array_i1 = np.stack(gradcam_vectors_i1)
+        gradcam_df_i1 = pd.DataFrame(
+            gradcam_array_i1,
+            columns=[
+                f"GradCAM(i1) | {i+1}-{j+1}"
+                for i in range(cam_i1.shape[0])
+                for j in range(cam_i1.shape[1])
+            ],
+        )
+
+        gradcam_array_i2 = np.stack(gradcam_vectors_i2)
+        gradcam_df_i2 = pd.DataFrame(
+            gradcam_array_i2,
+            columns=[
+                f"GradCAM(i2) | {i+1}-{j+1}"
+                for i in range(cam_i2.shape[0])
+                for j in range(cam_i2.shape[1])
+            ],
+        )
+
+        # Merge Grad-CAM features
+        df_results = pd.concat(
+            [df_results.reset_index(drop=True), gradcam_df_i1, gradcam_df_i2], axis=1
+        )
 
         os.makedirs(os.path.dirname(prediction_output_path), exist_ok=True)
         df_results.to_csv(prediction_output_path, index=False)
@@ -500,7 +611,7 @@ def run_test_dl_pipeline(
 
         # Define the target column and metadata columns
         target_column = "Log MIC Value"
-        metadata_columns = ["ID", "Sequence", "Targets"]
+        metadata_columns = ["ID", "Sequence", "Targets", "Sequence Length", "MIC Group"]
 
         # Define feature set for ANIA
         feature_set = {
