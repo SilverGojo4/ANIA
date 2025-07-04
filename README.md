@@ -2,6 +2,8 @@
 
 ANIA is a deep learning framework for predicting the minimum inhibitory concentration (MIC) of antimicrobial peptides (AMPs). It integrates Chaos Game Representation (CGR)-based sequence encoding with an Inception-Attention neural network to provide accurate MIC regression across multiple bacterial strains.
 
+[🌐 Visit the Web Server](https://biomics.lab.nycu.edu.tw/ANIA/)
+
 ## Getting Started
 
 This project provides a modular and command-line-driven pipeline via `main.py`, covering all stages from data collection to deep learning prediction.
@@ -56,9 +58,9 @@ python main.py --stage train_ania --strain "Pseudomonas aeruginosa" --log_path l
 python main.py --stage test_ania --strain "Pseudomonas aeruginosa" --log_path logs/test_ania.log --model_input_path weights/ANIA_PA.pth --prediction_output_path results/ania_predict.csv
 ```
 
-## Data and Model Download
+## Data Download
 
-To facilitate reproducibility and enable further research, all curated datasets, CGR/iFeature-encoded features, and pretrained deep learning models used in this study are publicly available at the following link:
+To facilitate reproducibility and enable further research, all curated datasets, CGR/iFeature-encoded features used in this study are publicly available at the following link:
 
 🔗 [https://biomics.lab.nycu.edu.tw/ANIA/#/download](https://biomics.lab.nycu.edu.tw/ANIA/#/download)
 
@@ -67,7 +69,6 @@ The following resources can be downloaded:
 - Cleaned AMP sequences with MIC annotations (CSV and FASTA formats)
 - CGR-encoded feature matrices for deep learning models
 - iFeature-encoded descriptors for traditional ML models
-- Pretrained model weights for *E. coli*, *S. aureus*, and *P. aeruginosa*
 
 ### Available Datasets
 
@@ -95,7 +96,7 @@ All files are directly accessible through the web interface and can be used as i
 
 ### ANIA Workflow
 
-![ANIA Workflow](figures/Fig2_fix.png)
+![ANIA Workflow](figures/Fig1.png)
 
 **Figure 1.** *Workflow of the ANIA-based MIC prediction system.*
 (A) Dataset collection and preprocessing. Antimicrobial peptide sequences and corresponding MIC values targeting *E. coli*, *S. aureus*, and *P. aeruginosa* were curated from public databases (DBAASP, dbAMP, DRAMP).
@@ -109,7 +110,7 @@ All files are directly accessible through the web interface and can be used as i
 
 ### CGR Encoding and ANIA Model Architecture
 
-![CGR and ANIA Architecture](figures/Fig1.png)
+![CGR and ANIA Architecture](figures/Fig2_fix.png)
 
 **Figure 2.** *Overview of CGR encoding and the ANIA model architecture.*
 (A) Application of CGR to an example AMP sequence (VLNEALLR), visualizing spatial encoding of sequential residues.
