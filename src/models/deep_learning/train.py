@@ -36,12 +36,12 @@ if BASE_PATH not in sys.path:
 if LOGGING_PATH not in sys.path:
     sys.path.append(LOGGING_PATH)
 
+# Deep Learning Utility Functions
+from models.deep_learning.ANIA import ANIA
+
 # ============================== Project-Specific Imports ==============================
 # Logging configuration and custom logger
 from setup_logging import CustomLogger
-
-# Deep Learning Utility Functions
-from models.deep_learning.ANIA import ANIA
 from src.models.deep_learning.utils import (
     extract_cgr_features_and_target_for_dl,
     get_hyperparameter_settings,
@@ -50,53 +50,6 @@ from src.models.deep_learning.utils import (
 
 
 # ============================== Custom Function ==============================
-def plot_loss_curve(
-    train_losses: list[float],
-    val_losses: list[float],
-    output_path: str,
-) -> None:
-    """
-    Plot training and validation loss curves and save the figure.
-
-    Parameters
-    ----------
-    train_losses : list of float
-        Training loss for each epoch.
-    val_losses : list of float
-        Validation loss for each epoch.
-    output_path : str
-        Path to save the plotted figure (including filename, without extension).
-    logger : CustomLogger, optional
-        Logger for reporting status (default: None).
-    """
-    style.use("ggplot")
-    plt.figure(figsize=(10, 6))
-    plt.plot(
-        range(1, len(train_losses) + 1),
-        train_losses,
-        label="Train Loss",
-        color="#82B0D2",
-        linewidth=2,
-    )
-    plt.plot(
-        range(1, len(val_losses) + 1),
-        val_losses,
-        label="Validation Loss",
-        color="#FFBE7A",
-        linewidth=2,
-    )
-    plt.xlabel("Epoch", fontsize=16)
-    plt.ylabel("Loss", fontsize=16)
-    plt.xticks(fontsize=14)
-    plt.yticks(fontsize=14)
-    plt.legend(fontsize=14)
-    plt.grid(True)
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    plt.tight_layout()
-    plt.savefig(output_path)
-    plt.close()
-
-
 def check_cuda_and_optimize(device: str, logger: CustomLogger) -> tuple[list[int], str]:
     """
     Check CUDA availability and set up optimizations for GPU training.
@@ -533,12 +486,6 @@ def train_ania(
         # Process the best model
         best_train_losses = all_train_losses[best_combination_idx]
         best_val_losses = all_val_losses[best_combination_idx]
-        loss_plot_path = model_output_path + "_loss_curve.png"
-        plot_loss_curve(
-            train_losses=best_train_losses,
-            val_losses=best_val_losses,
-            output_path=loss_plot_path,
-        )
 
         # Log the results of the best model
         param_str = "\n".join([f"    ▸ '{k}': {v}" for k, v in best_params.items()])  # type: ignore
