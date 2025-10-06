@@ -1,0 +1,64 @@
+# ===========================
+# iFeature Feature Configurations
+# ===========================
+# Each feature block defines how to run iFeature or its submodules
+# All commands are auto-assembled by the pipeline via placeholders:
+#   - {input_fasta} : path to input FASTA
+#   - {output_tsv}  : path to intermediate TSV
+#   - {output_csv}  : path to final CSV
+
+# ---------------------------------------------------------------
+# Amino Acid Composition (AAC)
+# ---------------------------------------------------------------
+AAC:
+  description: "Amino Acid Composition encoding (standard iFeature CLI)"
+  script: "src/utils/iFeature/iFeature.py"
+  args:
+    - "--file"
+    - "{input_fasta}"
+    - "--out"
+    - "{output_tsv}"
+    - "--type"
+    - "AAC"
+
+# ---------------------------------------------------------------
+# Pseudo Amino Acid Composition (PAAC)
+# ---------------------------------------------------------------
+PAAC:
+  description: "Pseudo Amino Acid Composition (custom submodule)"
+  script: "src/utils/iFeature/codes/PAAC.py"
+  args:
+    - "{input_fasta}"
+    - "5"               # lambda value (可依需要修改)
+    - "{output_tsv}"
+
+# ---------------------------------------------------------------
+# Composition / Transition / Distribution Descriptor (CTDD)
+# ---------------------------------------------------------------
+CTDD:
+  description: "CTDD descriptor using iFeature CLI"
+  script: "src/utils/iFeature/iFeature.py"
+  args:
+    - "--file"
+    - "{input_fasta}"
+    - "--out"
+    - "{output_tsv}"
+    - "--type"
+    - "CTDD"
+
+# ---------------------------------------------------------------
+# Grouped Amino Acid Composition (GAAC)
+# ---------------------------------------------------------------
+GAAC:
+  description: "Grouped Amino Acid Composition encoding (standard iFeature CLI)"
+  script: "src/utils/iFeature/iFeature.py"
+  args:
+    - "--file"
+    - "{input_fasta}"
+    - "--out"
+    - "{output_tsv}"
+    - "--type"
+    - "GAAC"
+
+__global__:
+  merge_features: true

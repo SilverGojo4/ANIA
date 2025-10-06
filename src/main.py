@@ -1,4 +1,4 @@
-# pylint: disable=line-too-long, import-error, wrong-import-position, broad-exception-caught
+# pylint: disable=line-too-long, import-error, wrong-import-position, broad-exception-caught, too-many-statements
 """
 ANIA - Project Main Entry Point
 
@@ -62,6 +62,14 @@ SUPPORTED_STAGES = {
     "split": {
         "title": "Stratified Train/Test Split by Log MIC Value",
         "import_path": "src.preprocess.split.run_split_pipeline",
+    },
+    "ifeature": {
+        "title": "iFeature Feature Encoding",
+        "import_path": "src.features.ifeature_encoding.run_ifeature_pipeline",
+    },
+    "cgr": {
+        "title": "Chaos Game Representation (CGR) Encoding",
+        "import_path": "src.features.cgr_encoding.run_cgr_pipeline",
     },
 }
 
@@ -421,6 +429,92 @@ def main():
         required=False,
         default=5,
         help="Number of folds for Stratified K-Fold splitting within training set (default: 5).",
+    )
+
+    # -------------------- iFeature Parameters --------------------
+    parser.add_argument(
+        "--ifeature_input_dir",
+        type=str,
+        required=False,
+        help=(
+            "Directory containing train/test FASTA files for each strain "
+            "(default: '<base_path>/data/processed/')."
+        ),
+    )
+    parser.add_argument(
+        "--ifeature_output_dir",
+        type=str,
+        required=False,
+        help=(
+            "Directory to save iFeature-encoded outputs "
+            "(default: '<base_path>/data/processed/ifeature')."
+        ),
+    )
+    parser.add_argument(
+        "--ifeature_config_path",
+        type=str,
+        required=False,
+        help=(
+            "Path to iFeature configuration YAML file "
+            "(default: '<base_path>/configs/ifeature_config.yml')."
+        ),
+    )
+    parser.add_argument(
+        "--ifeature_n_splits",
+        type=int,
+        required=False,
+        default=5,
+        help="Number of K-Fold splits (if applicable, default: 5).",
+    )
+
+    # -------------------- CGR Parameters --------------------
+    parser.add_argument(
+        "--cgr_input_dir",
+        type=str,
+        required=False,
+        help=(
+            "Directory containing train/test FASTA files for each strain "
+            "(default: '<base_path>/data/processed/')."
+        ),
+    )
+    parser.add_argument(
+        "--cgr_output_dir",
+        type=str,
+        required=False,
+        help=(
+            "Directory to save CGR-encoded feature outputs "
+            "(default: '<base_path>/data/processed/cgr')."
+        ),
+    )
+    parser.add_argument(
+        "--cgr_aaindex_path",
+        type=str,
+        required=False,
+        help=(
+            "Path to AAindex property CSV file "
+            "(default: '<base_path>/configs/AAindex_properties.csv')."
+        ),
+    )
+    parser.add_argument(
+        "--cgr_n_splits",
+        type=int,
+        required=False,
+        default=5,
+        help="Number of K-Fold splits (default: 5).",
+    )
+    parser.add_argument(
+        "--cgr_resolution",
+        type=int,
+        required=False,
+        default=16,
+        help="Resolution of CGR grid (e.g., 8, 16, 32). Default: 16.",
+    )
+    parser.add_argument(
+        "--cgr_kmer_k",
+        type=int,
+        required=False,
+        default=3,
+        help="Length of k-mer used for AAindex property mapping (default: 3).",
     )
 
     args = parser.parse_args()

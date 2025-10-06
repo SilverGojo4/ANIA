@@ -9,6 +9,7 @@ from typing import List, Optional
 
 # ============================== Third-Party Library Imports ==============================
 import pandas as pd
+import yaml
 
 
 # ============================== Custom Functions ==============================
@@ -177,6 +178,33 @@ def load_json_config(file_path: str) -> dict:
             config = json.load(f)
     except json.JSONDecodeError as exc:
         raise ValueError(f"Invalid JSON in config file '{file_path}'") from exc
+
+    return config
+
+
+def load_yml_config(file_path: str) -> dict:
+    """
+    Load a YAML configuration file and return its contents as a dictionary.
+
+    Parameters
+    ----------
+    file_path : str
+        Path to the YAML config file.
+
+    Returns
+    -------
+    dict
+        Dictionary containing the parsed YAML configuration.
+    """
+    # Check file exists
+    if not file_exists(file_path=file_path):
+        raise FileNotFoundError(f"Config file not found: '{file_path}'")
+
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            config = yaml.safe_load(f)
+    except yaml.YAMLError as exc:
+        raise ValueError(f"Invalid YAML in config file '{file_path}'") from exc
 
     return config
 
