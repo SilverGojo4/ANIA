@@ -1,4 +1,4 @@
-name: AMP_data_env
+name: ANIA_Data
 channels:
   - pytorch
   - defaults
@@ -101,4 +101,3 @@ dependencies:
   - zeromq=4.3.5=h6a678d5_0
   - zipp=3.21.0=py39h06a4308_0
   - zlib=1.2.13=h5eee18b_1
-prefix: /home/user_312554028/.conda/envs/AMP_data_env

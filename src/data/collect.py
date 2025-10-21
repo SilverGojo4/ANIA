@@ -690,7 +690,7 @@ def collect_dbamp(base_path: str, strains: dict, logger: CustomLogger) -> None:
     """
     try:
         # Load dbAMP data
-        dbamp_des_input_path = os.path.join(base_path, "data/raw/dbAMPv2.0.xls")
+        dbamp_des_input_path = os.path.join(base_path, "data/raw/dbAMPv3.0.xls")
         dbamp_seq_input_path = os.path.join(base_path, "data/raw/dbamp_raw.csv")
         dbamp_des = pd.read_excel(io=dbamp_des_input_path)
         dbamp_seq = pd.read_csv(filepath_or_buffer=dbamp_seq_input_path)

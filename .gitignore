@@ -70,3 +70,12 @@ api_data/uploads/
 api_data/predictions/
 api_data/logs/
 src/api
+
+# ===========================
+# Ignore Visualization & Local Custom Scripts
+# ===========================
+src/analysis/
+src/features/motif.py
+src/features/visualize_cgr.py
+src/features/cgr_plot.py
+configs/visualization.json
